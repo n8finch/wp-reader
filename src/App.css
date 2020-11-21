@@ -243,7 +243,8 @@ a:hover {
   border-top-left-radius: calc(0.25rem - 1px);
   border-top-right-radius: calc(0.25rem - 1px);
   flex-shrink: 0;
-  width: 100%;
+  float: left;
+  margin: 1rem;
 }
 
 .card-body {
@@ -252,10 +253,6 @@ a:hover {
   flex: 1 1 auto;
   min-height: 1px;
   padding: 1.25rem;
-}
-
-.card-body:last-of-type {
-  padding-top: 0;
 }
 
 .card-title {

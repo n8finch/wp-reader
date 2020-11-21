@@ -1,25 +1,17 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 import './App.css';
-import redditSVG from './assets/reddit.svg';
-import SearchBox from './Components/SearchBox';
-import RedditList from './Components/RedditList';
+import wpImg from './assets/wp.png';
+import BookList from './Components/BookList';
 
 function App() {
 	
 	// Setup some initial variables and states.
-	const url = 'https://www.reddit.com/r/';
-	const initialSubreddit = {
-		'page': 0,
-		'children': false,
-		'after': false,
-		'before': false,
-		'message': '',
-		'subreddit': '',
-	};
+	const url = 'http://wpbooks.local/wp-json/mybooks/v1/all-books/';
+	const initialBooks = [];
 
 	const [ fetching, setFetching ] = useState(false);
-	const [ currentSubreddit, setSubreddit ] = useState(initialSubreddit);
+	const [ books, setBooks ] = useState(initialBooks);
 
 	/**
 	 * Get the subreddit.
@@ -33,22 +25,20 @@ function App() {
 		// Setting this to true gives us the fun bone and dog spinner.
 		setFetching(true);
 
-		axios.get( url + subreddit + "/new/.json?limit=10" + extras )
+		axios.get( url )
 			.then((response) => {
 
-				let newSubreddit = {};
-
-				setSubreddit(newSubreddit);			
+				setBooks(response.data);			
 				setFetching(false);
 
 				window.scrollTo(0, 0);
 			})
 			.catch((error) => {
 
-				let errorSubreddit = initialSubreddit;
-				errorSubreddit.message = '🤷‍♀️ Looks like there were no results for that one... 🤷‍♂️';
+				let errorBooks = initialBooks;
+				errorBooks.message = '🤷‍♀️ Looks like there were no results for that one... 🤷‍♂️';
 
-				setSubreddit(errorSubreddit);
+				setBooks(errorBooks);
 				setFetching(false);
 			});
 	}
@@ -56,21 +46,21 @@ function App() {
 	return (
 		<div className="App">
 			<header className="App-header">
-				<img src={redditSVG} className="reddit-logo" alt="reddit"/>
+				<img src={wpImg} className="reddit-logo" alt="reddit"/>
 				<h1 className="App-logo" alt="logo"> WP Reader</h1>
-				<SearchBox getSubreddit={getSubreddit} fetching={fetching}/>
+				<button className="btn btn-primary" data-testid="searchReddit" onClick={getSubreddit} disabled={fetching ? 'disabled' : ''}>🔍 FetchIt</button>
 			</header>
 
 			{fetching && <p className="fetching-text"> <span className="bone-fetch">🦴</span> Going fetch 🐶</p>}
 
-			{currentSubreddit.children.length > 0 && 
+			{books.length > 0 && 
 				<>
-					<RedditList currentSubreddit={currentSubreddit}/>
+					<BookList books={books}/>
 				</>
 			}
 
-			{ ( !currentSubreddit.children || 0 === currentSubreddit.children.length )  && currentSubreddit.message !== '' && 
-				<p className="no-results-message">{currentSubreddit.message}</p>
+			{ ( !books.children || 0 === books.length )  && books.message !== '' && 
+				<p className="no-results-message">{books.message}</p>
 			}
 			
 		</div>
