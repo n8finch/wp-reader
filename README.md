@@ -1,13 +1,6 @@
-# Getting Started with the Reddit Reader
+# Getting Started with the WP Reader
 
-**_Demo can be seen [here](https://loving-meninsky-2aa8ad.netlify.app/)_**.
-
-This project does three simple things:
-
-- Provides a UI that allows a user to enter a subreddit (i.e. reactjs - [https://www.reddit.com/r/reactjs.json](https://www.reddit.com/r/reactjs.json))
-- When the UI receives the subreddit, display the most recent posts
-- The UI should only show 10 posts at a time with the ability to move forward/backward through the list of posts
-- Tests are provided to ensure confidence in the application running.
+This is a quick demo for showcasing basic API functions you can get from WordPress.
 
 ## Quick Start
 
@@ -16,9 +9,8 @@ This project does three simple things:
 3. In your terminal, `cd` into this project directory.
 4. Run `yarn` to install all the dependencies.
 5. Run `yarn start` to start the app on your localhost:3000.
-6. Run `yarn test` to run all the tests available for the app.
 
-More verbose info below.
+More verbose, create-react-app info below.
 
 ---
 
