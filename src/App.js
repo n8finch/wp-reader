@@ -27,7 +27,7 @@ function App() {
 
 		axios.get( url )
 			.then((response) => {
-
+				console.log(response.data);
 				setBooks(response.data);			
 				setFetching(false);
 
@@ -40,6 +40,48 @@ function App() {
 
 				setBooks(errorBooks);
 				setFetching(false);
+			});
+		
+		// GraphQL
+		axios( {
+			url: 'http://wpbooks.local/graphql',
+			method: 'post',
+			data: {
+				query: `{
+				  books {
+					edges {
+					  node {
+						id
+						title
+						content
+						databaseId
+						featuredImage {
+						  node {
+							altText
+							sourceUrl
+						  }
+						}
+					  }
+					}
+				  }
+				}`
+			}
+		})
+			.then((response) => {
+
+				// setBooks(response.data);			
+				// setFetching(false);
+
+				console.log(response.data.data.books.edges);
+
+			})
+			.catch((error) => {
+
+				let errorBooks = initialBooks;
+				errorBooks.message = '🤷‍♀️ Looks like there were no results for that one... 🤷‍♂️';
+
+				// setBooks(errorBooks);
+				// setFetching(false);
 			});
 	}
 

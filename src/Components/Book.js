@@ -12,6 +12,7 @@ function Book(props) {
                     <img src={book.featured_image_url} className="card-img-top" alt={book.title} />
                 }
                 <h5 className="card-title" data-testid="cardTitle">{book.title}</h5>
+                <p>Rating: {book.rating} </p>
                 <div dangerouslySetInnerHTML={{__html: trimmedText}} />
                 <br/>
                 <a href={book.permalink} className="btn btn-primary" target="_blank" rel="noopener noreferrer">Read More...</a>
