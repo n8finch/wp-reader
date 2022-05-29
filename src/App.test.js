@@ -75,7 +75,7 @@ test("fetches subreddits from an API and displays them", async () => {
 		});
 
 		// Fire that click, pew pew pew!!!
-		await userEvent.click(screen.getByTestId("searchReddit"));
+		await userEvent.click(screen.getByTestId("searchPosts"));
 	});
 
 	const items = screen.getAllByTestId("cardTitle");

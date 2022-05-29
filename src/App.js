@@ -2,25 +2,25 @@ import React, { useState } from 'react'
 import axios from 'axios';
 import './App.css';
 import wpImg from './assets/wp.png';
-import BookList from './Components/BookList';
+import PostList from './Components/PostList';
 
 function App() {
 	
 	// Setup some initial variables and states.
-	const url = 'http://wpbooks.local/wp-json/mybooks/v1/all-books/';
-	const initialBooks = [];
+	const url = 'https://wpapi.local/wp-json/wp/v2/posts';
+	const initialPosts = [];
 
 	const [ fetching, setFetching ] = useState(false);
-	const [ books, setBooks ] = useState(initialBooks);
+	const [ posts, setPosts ] = useState(initialPosts);
 
 	/**
-	 * Get the subreddit.
+	 * Get the posts.
 	 * 
-	 * @param {string} subreddit string from the SearchBox component. 
+	 * @param {string} searchString string from the SearchBox component. 
 	 * @param {string} extras suffix for adding the before/after and count to the request.
 	 * @param {string} pagination whether this is a new request from the searchbox or a previous or next page request.
 	 */
-	const getSubreddit = ({subreddit}, extras = '', pagination = 'new' ) => {
+	const getPosts = ({searchString}, extras = '', pagination = 'new' ) => {
 
 		// Setting this to true gives us the fun bone and dog spinner.
 		setFetching(true);
@@ -28,27 +28,30 @@ function App() {
 		axios.get( url )
 			.then((response) => {
 				console.log(response.data);
-				setBooks(response.data);			
+				setPosts(response.data);			
 				setFetching(false);
 
 				window.scrollTo(0, 0);
 			})
 			.catch((error) => {
+				let errorPosts = initialPosts;
+				errorPosts.message = '🤷‍♀️ Looks like there were no results for that one... 🤷‍♂️';
 
-				let errorBooks = initialBooks;
-				errorBooks.message = '🤷‍♀️ Looks like there were no results for that one... 🤷‍♂️';
-
-				setBooks(errorBooks);
+				setPosts(errorPosts);
 				setFetching(false);
 			});
-		
+	}
+
+	const getPostsGQL = ({searchString}, extras = '', pagination = 'new' ) => {
+		// Setting this to true gives us the fun bone and dog spinner.
+		setFetching(true);
 		// GraphQL
-		axios( {
-			url: 'http://wpbooks.local/graphql',
+		axios({
+			url: 'https://wpapi.local/graphql',
 			method: 'post',
 			data: {
 				query: `{
-				  books {
+				  posts {
 					edges {
 					  node {
 						id
@@ -68,21 +71,24 @@ function App() {
 			}
 		})
 			.then((response) => {
-
-				// setBooks(response.data);			
-				// setFetching(false);
-
-				console.log(response.data.data.books.edges);
-
+				console.log(response.data.data.posts.edges);
+				setPosts(transformGraphQL(response.data.data.posts.edges));			
+				setFetching(false);
 			})
 			.catch((error) => {
-
-				let errorBooks = initialBooks;
-				errorBooks.message = '🤷‍♀️ Looks like there were no results for that one... 🤷‍♂️';
-
-				// setBooks(errorBooks);
-				// setFetching(false);
+				let errorPosts = initialPosts;
+				errorPosts.message = '🤷‍♀️ Looks like there were no results for that one... 🤷‍♂️';
+				setPosts(errorPosts);
+				setFetching(false);
 			});
+	}
+
+	const transformGraphQL = (data) => {
+		const posts = data.map(({node}) => {
+			return node;
+		})
+		console.log(posts)
+		return posts;
 	}
 
 	return (
@@ -90,19 +96,21 @@ function App() {
 			<header className="App-header">
 				<img src={wpImg} className="reddit-logo" alt="reddit"/>
 				<h1 className="App-logo" alt="logo"> WP Reader</h1>
-				<button className="btn btn-primary" data-testid="searchReddit" onClick={getSubreddit} disabled={fetching ? 'disabled' : ''}>🔍 FetchIt</button>
+				<button className="btn btn-primary" data-testid="searchPosts" onClick={getPosts} disabled={fetching ? 'disabled' : ''}>🔍 REST FetchIt</button>
+				{" "}
+				<button className="btn btn-primary" data-testid="searchPosts" onClick={getPostsGQL} disabled={fetching ? 'disabled' : ''}>🔍 GraphQL FetchIt</button>
 			</header>
 
 			{fetching && <p className="fetching-text"> <span className="bone-fetch">🦴</span> Going fetch 🐶</p>}
 
-			{books.length > 0 && 
+			{posts.length > 0 && 
 				<>
-					<BookList books={books}/>
+					<PostList posts={posts}/>
 				</>
 			}
 
-			{ ( !books.children || 0 === books.length )  && books.message !== '' && 
-				<p className="no-results-message">{books.message}</p>
+			{ ( !posts.children || 0 === posts.length )  && posts.message !== '' && 
+				<p className="no-results-message">{posts.message}</p>
 			}
 			
 		</div>

@@ -35,7 +35,7 @@ function SearchBox(props) {
 				/>
 
 				<div className="input-group-append">
-					<button className="btn btn-primary" data-testid="searchReddit" type="submit" disabled={props.fetching ? 'disabled' : ''}>🔍 Search</button>
+					<button className="btn btn-primary" data-testid="searchPosts" type="submit" disabled={props.fetching ? 'disabled' : ''}>🔍 Search</button>
 				</div>
 			</div>
 		</form>
