@@ -1,4 +1,5 @@
 import Post from "./Post";
+import PostQL from "./PostQL";
 
 function PostList(props) {
 
@@ -10,7 +11,14 @@ function PostList(props) {
             <h3>Showing results for {posts.length} Posts</h3>
             <br/>
             { posts.map((post, index) => {
-                return <Post key={index} post={post}/>
+                let item;
+                if('rest' === props.source) {
+                    item = <Post key={index} post={post}/>
+                }
+                if('graphql' === props.source) {
+                    item = <PostQL key={index} post={post}/>
+                }
+                return item;
             })}
         </div>
     );

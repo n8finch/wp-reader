@@ -73,7 +73,7 @@ a:hover {
   font-size: calc(10px + 2vmin);
 }
 
-.reddit-logo {
+.logo {
   max-width: 50px;
 }
 
@@ -246,6 +246,7 @@ a:hover {
   flex-shrink: 0;
   float: left;
   margin: 1rem;
+  max-width: 95%;
 }
 
 .card-body {

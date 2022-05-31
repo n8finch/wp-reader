@@ -9,9 +9,18 @@ function App() {
 	// Setup some initial variables and states.
 	const url = 'https://wpapi.local/wp-json/wp/v2/posts';
 	const initialPosts = [];
+	const initialSource = '';
 
 	const [ fetching, setFetching ] = useState(false);
 	const [ posts, setPosts ] = useState(initialPosts);
+	const [ source, setSource ] = useState(initialSource);
+
+	const resetPosts = () => {
+		// Setting this to true gives us the fun bone and dog spinner.	
+		setFetching(true);
+		setPosts(initialPosts);
+		setSource(initialSource);
+	}
 
 	/**
 	 * Get the posts.
@@ -21,14 +30,13 @@ function App() {
 	 * @param {string} pagination whether this is a new request from the searchbox or a previous or next page request.
 	 */
 	const getPosts = ({searchString}, extras = '', pagination = 'new' ) => {
-
-		// Setting this to true gives us the fun bone and dog spinner.
-		setFetching(true);
+		resetPosts();
 
 		axios.get( url )
 			.then((response) => {
-				console.log(response.data);
+				console.log(response);
 				setPosts(response.data);			
+				setSource('rest');
 				setFetching(false);
 
 				window.scrollTo(0, 0);
@@ -43,36 +51,42 @@ function App() {
 	}
 
 	const getPostsGQL = ({searchString}, extras = '', pagination = 'new' ) => {
-		// Setting this to true gives us the fun bone and dog spinner.
-		setFetching(true);
+		resetPosts();
+
 		// GraphQL
 		axios({
 			url: 'https://wpapi.local/graphql',
 			method: 'post',
 			data: {
 				query: `{
-				  posts {
-					edges {
-					  node {
-						id
-						title
-						content
-						databaseId
-						featuredImage {
-						  node {
-							altText
-							sourceUrl
-						  }
+				    posts {
+						edges {
+							node {
+							id
+							title
+							content
+							databaseId
+							featuredImage {
+								node {
+								altText
+								sourceUrl(size: MEDIUM_LARGE)
+								}
+							}
+							}
 						}
-					  }
+						pageInfo {
+							hasNextPage
+							startCursor
+							endCursor
+						}
 					}
-				  }
 				}`
 			}
 		})
 			.then((response) => {
 				console.log(response.data.data.posts.edges);
 				setPosts(transformGraphQL(response.data.data.posts.edges));			
+				setSource('graphql');			
 				setFetching(false);
 			})
 			.catch((error) => {
@@ -85,16 +99,16 @@ function App() {
 
 	const transformGraphQL = (data) => {
 		const posts = data.map(({node}) => {
-			return node;
+			return {...node};
 		})
-		console.log(posts)
+		console.log(posts);
 		return posts;
 	}
 
 	return (
 		<div className="App">
 			<header className="App-header">
-				<img src={wpImg} className="reddit-logo" alt="reddit"/>
+				<img src={wpImg} className="logo" alt="logo"/>
 				<h1 className="App-logo" alt="logo"> WP Reader</h1>
 				<button className="btn btn-primary" data-testid="searchPosts" onClick={getPosts} disabled={fetching ? 'disabled' : ''}>🔍 REST FetchIt</button>
 				{" "}
@@ -105,7 +119,7 @@ function App() {
 
 			{posts.length > 0 && 
 				<>
-					<PostList posts={posts}/>
+					<PostList posts={posts} source={source}/>
 				</>
 			}
 

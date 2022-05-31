@@ -1,4 +1,5 @@
-function Post(props) {
+
+function LoginForm(props) {
 
     const post = props.post;
     
@@ -21,4 +22,4 @@ function Post(props) {
     )
 }
 
-export default Post
+export default LoginForm
